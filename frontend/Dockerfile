@@ -9,7 +9,8 @@ RUN npm ci
 COPY public ./public
 COPY src ./src
 
-ENV REACT_APP_API_URL=http://localhost:5000
+# FIX: Set to a relative path or your actual Kubernetes external domain
+ENV REACT_APP_API_URL=/ 
 RUN npm run build
 
 # Production stage
@@ -24,6 +25,6 @@ COPY --from=build /app/build ./build
 EXPOSE 3000
 
 HEALTHCHECK --interval=30s --timeout=3s --start-period=5s --retries=3 \
-    CMD node -e "require('http').get('http://localhost:3000', (r) => {if (r.statusCode !== 200) throw new Error(r.statusCode)})"
+    CMD node -e "require('http').get('http://localhost:3000/', (r) => {if (r.statusCode !== 200) throw new Error(r.statusCode)})"
 
 CMD ["serve", "-s", "build", "-l", "3000"]
