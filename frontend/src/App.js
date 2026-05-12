@@ -74,7 +74,7 @@ function App() {
         <div className="stats-bar">
           <div className="stat">📦 Products: {stats.total_products}</div>
           <div className="stat">📊 Orders: {stats.total_orders}</div>
-          <div className="stat">💰 Revenue: ${stats.total_revenue.toFixed(2)}</div>
+          <div className="stat">💰 Revenue: ₹{stats.total_revenue.toFixed(2)}</div>
           <div className="stat">📈 Stock: {stats.total_stock} units</div>
         </div>
       )}
