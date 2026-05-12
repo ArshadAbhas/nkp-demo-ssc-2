@@ -3,6 +3,7 @@ import './App.css';
 import ProductList from './components/ProductList';
 import Cart from './components/Cart';
 import OrderList from './components/OrderList';
+import Admin from './components/Admin';
 
 function App() {
   const [currentPage, setCurrentPage] = useState('products');
@@ -44,6 +45,10 @@ function App() {
     setCart([]);
   };
 
+  if (currentPage === 'admin') {
+    return <Admin onBack={() => setCurrentPage('products')} />;
+  }
+
   return (
     <div className="App">
       <header className="header">
@@ -66,6 +71,12 @@ function App() {
             onClick={() => setCurrentPage('orders')}
           >
             Orders
+          </button>
+          <button
+            className={currentPage === 'admin' ? 'active' : ''}
+            onClick={() => setCurrentPage('admin')}
+          >
+            Admin
           </button>
         </nav>
       </header>
