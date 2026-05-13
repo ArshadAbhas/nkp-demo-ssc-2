@@ -1,9 +1,23 @@
 ---
-# 1. Backend Deployment
+# 1. Database Storage (PVC)
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: sqlite-data-pvc
+  namespace: demo
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 50Mi # Intentionally small for the PV fill-up scenario
+---
+# 2. Backend Deployment
 apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: backend-api
+  namespace: demo
   labels:
     app: backend-api
 spec:
@@ -18,16 +32,23 @@ spec:
     spec:
       containers:
       - name: backend
-        image: kabhinyasri1911/ecommerce-backend:v1 # <--- UPDATE THIS
+        image: kabhinyasri1911/ecommerce-backend:v1
         ports:
         - containerPort: 5000
-
+        volumeMounts:
+        - name: sqlite-storage
+          mountPath: /app/data
+      volumes:
+      - name: sqlite-storage
+        persistentVolumeClaim:
+          claimName: sqlite-data-pvc
 ---
-# 2. Backend Service
+# 3. Backend Service
 apiVersion: v1
 kind: Service
 metadata:
   name: backend-service
+  namespace: demo
 spec:
   selector:
     app: backend-api
@@ -35,13 +56,13 @@ spec:
   - protocol: TCP
     port: 5000
     targetPort: 5000
-
 ---
-# 3. Frontend Deployment
+# 4. Frontend Deployment
 apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: frontend-app
+  namespace: demo
   labels:
     app: frontend-app
 spec:
@@ -56,7 +77,7 @@ spec:
     spec:
       containers:
       - name: frontend
-        image: kabhinyasri1911/ecommerce-frontend:v1 # <--- UPDATE THIS
+        image: kabhinyasri1911/ecommerce-frontend:v1
         ports:
         - containerPort: 3000
         resources:
@@ -66,15 +87,15 @@ spec:
           limits:
             memory: "256Mi"
             cpu: "500m"
-
 ---
-# 4. Frontend Service (Exposes the site)
+# 5. Frontend Service (Exposes the site)
 apiVersion: v1
 kind: Service
 metadata:
   name: frontend-service
+  namespace: demo
 spec:
-  type: LoadBalancer 
+  type: LoadBalancer
   selector:
     app: frontend-app
   ports:

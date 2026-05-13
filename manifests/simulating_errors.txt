@@ -1,0 +1,57 @@
+Scenario 1: Black Friday OOMKilled
+
+# Break
+kubectl set resources deployment frontend-app --limits=memory=5Mi -n demo
+# Fix
+kubectl set resources deployment frontend-app --limits=memory=256Mi -n demo
+
+
+Scenario 2: Dynamic Pricing CPU Throttling
+
+# Break
+kubectl set resources deployment backend-api --limits=cpu=1m -n demo
+# Fix
+kubectl set resources deployment backend-api --limits=cpu=500m -n demo
+
+
+Scenario 3: Microservice Outage
+
+# Break (Run this where you saved block-backend.yaml)
+kubectl apply -f block-backend.yaml -n demo
+# Fix
+kubectl delete networkpolicy block-backend-access -n demo
+
+
+Scenario 4: Security Threat (Brute-Force Script)
+
+# 1. First, get your backend service IP or port-forward
+kubectl port-forward svc/backend-service 5000:5000 -n demo
+
+# 2. Run the brute force in a separate PowerShell tab
+$baseUrl = "http://localhost:5000"
+$protectedEndpoints = @("/api/admin/dashboard", "/api/orders")
+
+Write-Host "Initiating Admin API Brute-Force Simulation..." -ForegroundColor Red
+1..50 | ForEach-Object {
+    $endpoint = $protectedEndpoints | Get-Random
+    $targetUrl = "$baseUrl$endpoint"
+    $fakeKey = "admin-key-guess-$_"
+    
+    try {
+        Invoke-RestMethod -Uri $targetUrl -Headers @{"X-Admin-Key"="$fakeKey"} -ErrorAction SilentlyContinue | Out-Null
+    } catch {
+        Write-Host "Unauthorized Access Attempt: $targetUrl with key '$fakeKey' - Blocked" -ForegroundColor Yellow
+    }
+    Start-Sleep -Milliseconds 150 
+}
+
+
+Scenario 5: Proactive Storage Alert
+
+# Break (Fill the disk)
+kubectl exec -it deployment/backend-api -n demo -- /bin/sh -c "dd if=/dev/zero of=/app/data/dummy_data.bin bs=1M count=42"
+
+# Fix (Clear the disk)
+kubectl exec -it deployment/backend-api -n demo -- rm /app/data/dummy_data.bin
+
+
