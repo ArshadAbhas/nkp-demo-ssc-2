@@ -16,10 +16,10 @@ jobs:
 
       - name: Build & Push Backend
         run: |
-          docker build -t <HARBOR_IP>:5000/library/backend:latest ./backend
-          docker push <HARBOR_IP>:5000/library/backend:latest
+          docker build -t  10.55.56.16:5000/library/backend:latest ./backend
+          docker push  10.55.56.16:5000/library/backend:latest
 
       - name: Build & Push Frontend
         run: |
-          docker build -t <HARBOR_IP>:5000/library/frontend:latest ./frontend
-          docker push <HARBOR_IP>:5000/library/frontend:latest
+          docker build -t  10.55.56.16:5000/library/frontend:latest ./frontend
+          docker push  10.55.56.16:5000/library/frontend:latest
