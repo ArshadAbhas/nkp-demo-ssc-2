@@ -16,8 +16,8 @@ kubectl set resources deployment backend-api --limits=cpu=500m -n demo
 
 Scenario 3: Microservice Outage
 
-# Break (Run this where you saved block-backend.yaml)
-kubectl apply -f block-backend.yaml -n demo
+# Break (Run this where you saved nw-block.yaml)
+kubectl apply -f nw-block.yaml -n demo
 # Fix
 kubectl delete networkpolicy block-backend-access -n demo
 
