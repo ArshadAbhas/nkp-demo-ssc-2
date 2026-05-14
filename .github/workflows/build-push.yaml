@@ -1,0 +1,25 @@
+name: Build and Push Services
+on:
+  push:
+    branches: [ main ]
+jobs:
+  build-and-push:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Login to Harbor
+        run: |
+          # Using your custom secret name HARBOR_SECRET
+          echo "${{ secrets.HARBOR_SECRET }}" | docker login <HARBOR_IP>:5000 -u admin --password-stdin
+
+      - name: Build & Push Backend
+        run: |
+          docker build -t <HARBOR_IP>:5000/library/backend:latest ./backend
+          docker push <HARBOR_IP>:5000/library/backend:latest
+
+      - name: Build & Push Frontend
+        run: |
+          docker build -t <HARBOR_IP>:5000/library/frontend:latest ./frontend
+          docker push <HARBOR_IP>:5000/library/frontend:latest
