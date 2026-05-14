@@ -1,23 +1,9 @@
 ---
-# 1. Database Storage (PVC)
-apiVersion: v1
-kind: PersistentVolumeClaim
-metadata:
-  name: sqlite-data-pvc
-  namespace: demo
-spec:
-  accessModes:
-    - ReadWriteOnce
-  resources:
-    requests:
-      storage: 50Mi # Intentionally small for the PV fill-up scenario
----
-# 2. Backend Deployment
+# 1. Backend Deployment
 apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: backend-api
-  namespace: demo
   labels:
     app: backend-api
 spec:
@@ -32,37 +18,31 @@ spec:
     spec:
       containers:
       - name: backend
-        image: kabhinyasri1911/ecommerce-backend:v1
+        image: harishankar0602/ecommerce-backend:v1
         ports:
         - containerPort: 5000
-        volumeMounts:
-        - name: sqlite-storage
-          mountPath: /app/data
-      volumes:
-      - name: sqlite-storage
-        persistentVolumeClaim:
-          claimName: sqlite-data-pvc
+
 ---
-# 3. Backend Service
+# 2. Backend Service
 apiVersion: v1
 kind: Service
 metadata:
   name: backend-service
-  namespace: demo
 spec:
+  type: LoadBalancer
   selector:
     app: backend-api
   ports:
   - protocol: TCP
     port: 5000
     targetPort: 5000
+
 ---
-# 4. Frontend Deployment
+# 3. Frontend Deployment (Added the missing --- above this)
 apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: frontend-app
-  namespace: demo
   labels:
     app: frontend-app
 spec:
@@ -77,9 +57,12 @@ spec:
     spec:
       containers:
       - name: frontend
-        image: kabhinyasri1911/ecommerce-frontend:v1
+        image: harishankar0602/ecommerce-frontend:v2
         ports:
         - containerPort: 3000
+        env:
+          - name: REACT_APP_API_URL
+            value: "http://10.38.191.43:5000" # Backend service URL
         resources:
           requests:
             memory: "128Mi"
@@ -87,13 +70,13 @@ spec:
           limits:
             memory: "256Mi"
             cpu: "500m"
+
 ---
-# 5. Frontend Service (Exposes the site)
+# 4. Frontend Service (Exposes the site)
 apiVersion: v1
 kind: Service
 metadata:
   name: frontend-service
-  namespace: demo
 spec:
   type: LoadBalancer
   selector:
