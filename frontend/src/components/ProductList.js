@@ -12,7 +12,7 @@ function ProductList({ onAddToCart }) {
   const fetchProducts = async () => {
     try {
       setLoading(true);
-      const response = await fetch(`${process.env.REACT_APP_API_URL}/api/products`);
+      const response = await fetch(`http://10.38.191.43:5000/api/products`);
       const data = await response.json();
       setProducts(data);
       setError(null);

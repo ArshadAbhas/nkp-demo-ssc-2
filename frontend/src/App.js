@@ -18,7 +18,7 @@ function App() {
 
   const fetchStats = async () => {
     try {
-      const response = await fetch(`${process.env.REACT_APP_API_URL}/api/stats`);
+      const response = await fetch(`http://10.38.191.43:5000/api/stats`);
       const data = await response.json();
       setStats(data);
     } catch (error) {
