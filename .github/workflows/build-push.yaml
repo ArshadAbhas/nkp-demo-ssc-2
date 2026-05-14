@@ -12,7 +12,7 @@ jobs:
       - name: Login to Harbor
         run: |
           # Using your custom secret name HARBOR_SECRET
-          echo "${{ secrets.HARBOR_SECRET }}" | docker login <HARBOR_IP>:5000 -u admin --password-stdin
+          echo "${{ secrets.HARBOR_SECRET }}" | docker login  10.55.56.16:5000 -u admin --password-stdin
 
       - name: Build & Push Backend
         run: |
